@@ -1,6 +1,6 @@
 Name:           dash
 Version:        0.5.5.1
-Release:        3.1%{?dist}
+Release:        4%{?dist}
 Summary:        Small and fast POSIX-compliant shell
 
 Group:          System Environment/Shells
@@ -33,6 +33,14 @@ rm -rf $RPM_BUILD_ROOT%{_bindir}/
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+grep -q '^/bin/dash$' /etc/shells || echo '/bin/dash' >> /etc/shells
+
+%postun
+if [ $1 -eq 0 ]; then
+    sed -i '/^\/bin\/dash$/d' /etc/shells
+fi
+
 %files
 %defattr(-,root,root,-)
 %doc
@@ -40,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/man/man1/dash.1.gz
 
 %changelog
+* Fri Sep 21 2012 Petr Pisar <ppisar@redhat.com> - 0.5.5.1-4
+- Install/remove dash from /etc/shells (Resolves: #706147)
+
 * Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 0.5.5.1-3.1
 - Rebuilt for RHEL 6
 
